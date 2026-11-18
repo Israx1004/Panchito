@@ -1,0 +1,6 @@
+[
+  {"tipo": "urgencias", "nombre": "Número de emergencias", "contacto": "911", "nota": "Llamar ante inconsciencia, convulsiones o dificultad para respirar."},
+  {"tipo": "urgencias", "nombre": "Cruz Roja Mexicana", "contacto": "065", "nota": "Atención prehospitalaria."},
+  {"tipo": "consulta", "nombre": "Centro de salud más cercano", "contacto": "Consultar en la clínica asignada", "nota": "Seguimiento de glucosa y ajuste de tratamiento."},
+  {"tipo": "nutricion", "nombre": "Servicio de nutrición de la clínica", "contacto": "Agendar cita en la clínica", "nota": "Plan de alimentación individual."}
+]

@@ -1,0 +1,11 @@
+Fuentes incluidas para que la página funcione sin internet (SIL Open Font License 1.1):
+
+- Barlow Condensed (Jeremy Tribby) — barlow-condensed-600.woff2, barlow-condensed-700.woff2
+- Atkinson Hyperlegible (Braille Institute of America) — atkinson-400.woff2, atkinson-700.woff2, atkinson-400-italic.woff2
+
+Origen: paquetes @fontsource/barlow-condensed@5.0.13 y @fontsource/atkinson-hyperlegible@5.0.13 (subconjunto latin).
+Licencia: https://openfontlicense.org
+
+Bricolage Grotesque (bricolage-grotesque-latin-wght-normal.woff2)
+  Copyright 2022 The Bricolage Grotesque Project Authors. SIL Open Font License 1.1.
+  Obtenida de Fontsource (@fontsource-variable/bricolage-grotesque 5.1.0).

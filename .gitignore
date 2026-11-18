@@ -1,0 +1,38 @@
+# Entorno de Python: cada equipo lo crea con requirements.txt
+.venv/
+__pycache__/
+*.pyc
+
+# Documentación y entregables (no se necesitan para que funcione)
+README.md
+PRODUCT.md
+archivos/
+
+# Demostraciones y experimentos de las tareas (no los usa el asistente)
+demos.py
+evidencias.py
+experimentos/
+asistente/agente_tecnicas.py
+modelos/
+*.safetensors
+
+# Datos de entrenamiento y evaluación (el asistente no los lee)
+datos/asistente.db
+datos/correcciones.jsonl
+datos/diabetes_qa.jsonl
+datos/ejemplos_seguridad.jsonl
+datos/eval_prompts.json
+datos/test_referencias.jsonl
+
+# Resultados: solo se suben indice.json y teacher_responses_v2.jsonl
+resultados/*
+!resultados/indice.json
+!resultados/teacher_responses_v2.jsonl
+
+# Herramientas del editor y de diseño
+.vscode/
+.impeccable/
+.superpowers/
+
+# Fuentes que la interfaz ya no usa
+interfaz/fuentes/barlow-condensed-*.woff2

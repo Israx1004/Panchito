@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Diabetes · Panchito</title>
+    <meta name="description" content="Panchito, asistente local de nutrición y diabetes (Gemma 4 vía Ollama).">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70'%3E%3Cpath d='M14 40C6 26 16 10 32 14C44 6 58 18 70 16C84 14 98 20 108 26C116 30 114 40 104 40C92 42 80 40 70 46C58 54 46 52 38 58C26 64 16 54 14 40Z' fill='%23f4a08a'/%3E%3Ccircle cx='34' cy='33' r='5' fill='%231f2a1c'/%3E%3Ccircle cx='50' cy='31' r='5' fill='%231f2a1c'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <svg width="0" height="0" class="oculto" aria-hidden="true" focusable="false">
+        <!-- Panchito, el pcreas -->
+        <symbol id="panchito" viewBox="0 0 120 70">
+            <path class="p-cuerpo" d="M14 40C6 26 16 10 32 14C44 6 58 18 70 16C84 14 98 20 108 26C116 30 114 40 104 40C92 42 80 40 70 46C58 54 46 52 38 58C26 64 16 54 14 40Z"/>
+            <path class="p-brillo" d="M26 20c6-3 12-2 16 1M76 21c8-1 16 1 22 5"/>
+            <g class="p-ojos"><circle cx="34" cy="33" r="4.4"/><circle cx="50" cy="31" r="4.4"/></g>
+            <path class="p-boca" d="M36 42q7 6 14 0"/>
+            <circle class="p-chapa" cx="26" cy="42" r="4.2"/>
+            <circle class="p-chapa" cx="58" cy="39" r="4.2"/>
+        </symbol>
+        <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-nueva" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="i-otro" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="i-telefono" viewBox="0 0 24 24"><path d="M6 3h4l1.5 5-2.5 1.5a11 11 0 0 0 5.5 5.5L16 12.5l5 1.5v4a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+        <symbol id="i-aprox" viewBox="0 0 24 24"><path d="M5 9c2-2 4-2 7 0s5 2 7 0M5 15c2-2 4-2 7 0s5 2 7 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    </svg>
+
+    <header class="cabecera">
+        <svg class="panchito panchito--grande" aria-hidden="true"><use href="#panchito"/></svg>
+        <div class="cabecera__texto">
+            <h1>¡Hola, <span>soy Panchito!</span></h1>
+            <p>Tu asistente de DIABETES especializado en nutrición</p>
+        </div>
+        <p class="estado" id="estado" role="status" aria-live="polite">
+            <span class="estado__punto" aria-hidden="true"></span><span id="estado-texto">Conectando…</span>
+        </p>
+    </header>
+
+    <main class="mitades">
+        <section class="platica" aria-labelledby="titulo-platica">
+            <div class="platica__titulo">
+                <svg class="panchito panchito--mediano" aria-hidden="true"><use href="#panchito"/></svg>
+                <h2 id="titulo-platica">Panchito te platica</h2>
+                <button type="button" class="boton boton--suave" id="otro-tip">
+                    <svg class="icono" aria-hidden="true"><use href="#i-otro"/></svg>
+                </button>
+            </div>
+
+            <ul class="globos" id="tips" aria-live="polite"></ul>
+            <p class="globo globo--alarma">
+                <svg class="icono" aria-hidden="true"><use href="#i-alerta"/></svg>
+                <span><b>Señales de alarma.</b> Inconsciente, muy confundido o sin poder tragar: nada por la boca y llama al <strong>911</strong>.</span>
+            </p>
+
+            <section class="monitoreo tarjeta" aria-labelledby="titulo-monitoreo">
+                <div class="monitoreo__cabeza">
+                    <h2 id="titulo-monitoreo">Mi monitoreo</h2>
+                </div>
+                <p class="monitoreo__perfil" id="perfil">Todavía no me has dicho tu tipo de diabetes, peso ni estatura.</p>
+                <div class="grafica" id="grafica" aria-hidden="true"></div>
+                <div class="lecturas__scroll">
+                    <table class="lecturas" id="lecturas">
+                        <caption class="oculto">Glucosas que reportaste en esta conversación</caption>
+                        <thead><tr><th scope="col">Hora</th><th scope="col">Glucosa</th><th scope="col">Estado</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section class="chat tarjeta" aria-labelledby="titulo-chat">
+            <div class="chat__cabecera">
+                <h2 id="titulo-chat">Chat con Panchito</h2>
+                <button type="button" class="boton boton--suave" id="nueva">
+                    <svg class="icono" aria-hidden="true"><use href="#i-nueva"/></svg>
+                </button>
+            </div>
+
+            <ol class="chat__log" id="log" aria-live="polite" aria-label="Conversación">
+                <li class="bienvenida">
+                    <h3>¿Qué comiste hoy?</h3>
+                    <p>Pregúntame por las calorías, carbohidratos, proteína o fibra de lo que comes, o cuéntame cómo salió tu glucosa. Mis cifras son estimadas y no sustituyen a tu médico.</p>
+                </li>
+            </ol>
+
+            <form class="entrada" id="formulario">
+                <label for="pregunta" class="oculto">Escríbele a Panchito</label>
+                <textarea id="pregunta" rows="1" maxlength="2000" placeholder="Escríbele a Panchito…" required></textarea>
+                <button type="submit" class="boton boton--enviar" id="enviar" aria-label="Enviar">
+                    Enviar<svg class="icono" aria-hidden="true"><use href="#i-enviar"/></svg>
+                </button>
+            </form>
+            <p class="entrada__ayuda">Enter envía · Shift+Enter hace un salto de línea</p>
+        </section>
+    </main>
+
+    <footer class="pie">
+        Proyecto educativo: no sustituye la atención médica. Todas las cifras de alimentos son estimadas.
+    </footer>
+
+    <template id="t-tabla">
+        <figure class="tabla-nutri">
+            <figcaption><span>Cálculo nutrimental</span><span class="sello">Estimado</span></figcaption>
+            <div class="tabla-nutri__scroll">
+                <table>
+                    <thead><tr><th scope="col">Alimento</th><th scope="col">kcal</th><th scope="col">Carbos</th><th scope="col">Proteína</th><th scope="col">Grasa</th><th scope="col">Fibra</th></tr></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+            <p class="tabla-nutri__carga"></p>
+        </figure>
+    </template>
+
+    <script src="asistente.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
